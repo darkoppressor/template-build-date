@@ -4,7 +4,6 @@
 
 #include "main.h"
 #include "string_stuff.h"
-#include "file_io.h"
 
 #include <iostream>
 #include <vector>
@@ -20,17 +19,60 @@ void print_error(string error_message){
 }
 
 int main(int argc,char* args[]){
-    update_version_header();
+    //Can this even happen?
+    if(argc<=0){
+        print_error("Did not receive the program name");
+
+        return 1;
+    }
+    else if(argc!=2){
+        string program_name=args[0];
+
+        cout<<program_name<<" - refresh the build date for a Cheese Engine project\n";
+        cout<<"Usage: "<<program_name<<" project-directory\n";
+
+        return 0;
+    }
+
+    string project_directory=args[1];
+
+    if(project_directory.length()==0){
+        print_error("The project-directory argument has a length of 0");
+
+        return 1;
+    }
+
+    if(boost::algorithm::ends_with(project_directory,"/") || boost::algorithm::ends_with(project_directory,"\\")){
+        project_directory.erase(project_directory.begin()+project_directory.length()-1);
+    }
+
+    if(!boost::filesystem::is_directory(project_directory)){
+        print_error("No such directory: "+project_directory);
+
+        return 1;
+    }
+
+    if(!update_version_header(project_directory)){
+        return 1;
+    }
 
     return 0;
 }
 
-void update_version_header(){
+bool update_version_header(string project_directory){
+    if(!boost::filesystem::exists(project_directory+"/version.h")){
+        print_error("No such file: "+project_directory+"/version.h");
+
+        return false;
+    }
+
+    cout<<"Refreshing the build date for the project in directory "<<project_directory<<"\n";
+
     vector<string> file_data;
 
     String_Stuff string_stuff;
 
-    ifstream file("../version.h");
+    ifstream file(project_directory+"/version.h");
 
     if(file.is_open()){
         while(!file.eof()){
@@ -43,6 +85,11 @@ void update_version_header(){
     }
     else{
         print_error("Failed to open version.h for updating (input phase)");
+
+        file.close();
+        file.clear();
+
+        return false;
     }
 
     file.close();
@@ -80,7 +127,7 @@ void update_version_header(){
         }
     }
 
-    ofstream file_save("../version.h");
+    ofstream file_save(project_directory+"/version.h");
 
     if(file_save.is_open()){
         for(int i=0;i<file_data.size();i++){
@@ -93,8 +140,15 @@ void update_version_header(){
     }
     else{
         print_error("Failed to open version.h for updating (output phase)");
+
+        file_save.close();
+        file_save.clear();
+
+        return false;
     }
 
     file_save.close();
     file_save.clear();
+
+    return true;
 }
