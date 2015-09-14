@@ -29,7 +29,7 @@ int main(int argc,char* args[]){
         string program_name=args[0];
 
         cout<<program_name<<" - refresh the build date for a Cheese Engine project\n";
-        cout<<"Usage: "<<program_name<<" project-directory\n";
+        cout<<"Usage: "<<program_name<<" PROJECT-DIRECTORY\n";
 
         return 0;
     }
