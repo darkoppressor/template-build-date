@@ -37,7 +37,7 @@ int main(int argc,char* args[]){
     string project_directory=args[1];
 
     if(project_directory.length()==0){
-        print_error("The project-directory argument has a length of 0");
+        print_error("The PROJECT-DIRECTORY argument has a length of 0");
 
         return 1;
     }
