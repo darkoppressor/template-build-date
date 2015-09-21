@@ -52,16 +52,16 @@ int main(int argc,char* args[]){
         return 1;
     }
 
-    if(!update_version_header(project_directory)){
+    if(!update_version_file(project_directory)){
         return 1;
     }
 
     return 0;
 }
 
-bool update_version_header(string project_directory){
-    if(!boost::filesystem::exists(project_directory+"/version.h")){
-        print_error("No such file: "+project_directory+"/version.h");
+bool update_version_file(string project_directory){
+    if(!boost::filesystem::exists(project_directory+"/version.cpp")){
+        print_error("No such file: "+project_directory+"/version.cpp");
 
         return false;
     }
@@ -72,7 +72,7 @@ bool update_version_header(string project_directory){
 
     String_Stuff string_stuff;
 
-    ifstream file(project_directory+"/version.h");
+    ifstream file(project_directory+"/version.cpp");
 
     if(file.is_open()){
         while(!file.eof()){
@@ -84,7 +84,7 @@ bool update_version_header(string project_directory){
         }
     }
     else{
-        print_error("Failed to open version.h for updating (input phase)");
+        print_error("Failed to open version.cpp for updating (input phase)");
 
         file.close();
         file.clear();
@@ -96,18 +96,22 @@ bool update_version_header(string project_directory){
     file.clear();
 
     for(int i=0;i<file_data.size();i++){
-        if(boost::algorithm::contains(file_data[i],"static const char") && !boost::algorithm::contains(file_data[i],"STATUS")){
+        if(boost::algorithm::contains(file_data[i],"YEAR") || boost::algorithm::contains(file_data[i],"MONTH") || boost::algorithm::contains(file_data[i],"DAY")){
             for(int n=0;n<file_data[i].length();n++){
-                if(file_data[i][n]=='='){
+                if(file_data[i][n]=='n'){
                     string date_string="";
+                    string end_string="";
                     if(boost::algorithm::contains(file_data[i],"YEAR")){
                         date_string="%Y";
+                        end_string="//YEAR";
                     }
                     else if(boost::algorithm::contains(file_data[i],"MONTH")){
                         date_string="%m";
+                        end_string="//MONTH";
                     }
                     else{
                         date_string="%d";
+                        end_string="//DAY";
                     }
 
                     char buff[BUFSIZ];
@@ -119,7 +123,7 @@ bool update_version_header(string project_directory){
 
                     file_data[i].erase(file_data[i].begin()+n,file_data[i].end());
 
-                    file_data[i]+="=\""+component+"\";";
+                    file_data[i]+="n \""+component+"\"; "+end_string;
 
                     break;
                 }
@@ -127,7 +131,7 @@ bool update_version_header(string project_directory){
         }
     }
 
-    ofstream file_save(project_directory+"/version.h");
+    ofstream file_save(project_directory+"/version.cpp");
 
     if(file_save.is_open()){
         for(int i=0;i<file_data.size();i++){
@@ -139,7 +143,7 @@ bool update_version_header(string project_directory){
         }
     }
     else{
-        print_error("Failed to open version.h for updating (output phase)");
+        print_error("Failed to open version.cpp for updating (output phase)");
 
         file_save.close();
         file_save.clear();

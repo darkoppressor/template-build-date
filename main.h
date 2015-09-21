@@ -11,6 +11,6 @@ void print_error(std::string error_message);
 
 int main(int argc,char* args[]);
 
-bool update_version_header(std::string project_directory);
+bool update_version_file(std::string project_directory);
 
 #endif
