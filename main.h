@@ -1,4 +1,4 @@
-/* Copyright (c) 2012 Cheese and Bacon Games, LLC */
+/* Copyright (c) Cheese and Bacon Games */
 /* This file is licensed under the MIT License. */
 /* See the file docs/LICENSE.txt for the full license text. */
 
@@ -9,7 +9,7 @@
 
 void print_error(std::string error_message);
 
-int main(int argc,char* args[]);
+int main(int argc, char* args[]);
 
 bool update_version_file(std::string project_directory);
 
